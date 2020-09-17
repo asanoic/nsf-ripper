@@ -14,7 +14,7 @@ const int kTotalChannel = 2;
 const int kRefreshRate = 60;
 const int kSampleCount = kSampleRate / kRefreshRate;
 
-vector<uint8_t> toFlac(const vector<short>& raw, const string& title) {
+vector<uint8_t> toFlac(const vector<int>& raw, const string& title) {
     vector<uint8_t> result;
     int sampleCount = raw.size() / kTotalChannel;
 
@@ -40,18 +40,17 @@ vector<uint8_t> toFlac(const vector<short>& raw, const string& title) {
             return FLAC__STREAM_ENCODER_WRITE_STATUS_OK;
         },
         nullptr, nullptr, nullptr, &result);
-    vector<int> samples(raw.begin(), raw.end());
-    FLAC__stream_encoder_process_interleaved(encoder, samples.data(), sampleCount);
+    FLAC__stream_encoder_process_interleaved(encoder, raw.data(), sampleCount);
     FLAC__stream_encoder_finish(encoder);
     FLAC__stream_encoder_delete(encoder);
     FLAC__metadata_object_delete(meta);
     return result;
 }
 
-vector<short> workOnTrack(Music_Emu* emu, int track) {
+vector<int> workOnTrack(Music_Emu* emu, int track) {
     static int limit = 3 * 60 * kTotalChannel * kSampleRate;
     vector<short> buf(kSampleCount * kTotalChannel, 0);
-    vector<short> res;
+    vector<int> res;
     gme_start_track(emu, track);
     while (res.size() < limit && !gme_track_ended(emu)) {
         gme_play(emu, buf.size(), buf.data());
@@ -63,7 +62,9 @@ vector<short> workOnTrack(Music_Emu* emu, int track) {
 int main(int argc, char* argv[]) {
     if (argc != 2) {
         cout << "Need nsf file" << endl;
+        return 0;
     }
+
     fs::path nsf(argv[1]);
 
     Music_Emu* emu = nullptr;
@@ -73,7 +74,7 @@ int main(int argc, char* argv[]) {
 
     filesystem::create_directory(nsf.root_path() / nsf.stem());
     for (int i = 0; i < total; ++i) {
-        vector<short> raw = workOnTrack(emu, i);
+        vector<int> raw = workOnTrack(emu, i);
         vector<uint8_t> flac = toFlac(raw, to_string(i + 1));
         ofstream out;
         out.open(nsf.root_path() / nsf.stem() / (to_string(i + 1) + ".flac"), ios::binary | ios::out);
