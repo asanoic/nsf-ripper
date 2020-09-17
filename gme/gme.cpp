@@ -2,6 +2,9 @@
 
 #include "Music_Emu.h"
 
+#include <cstdint>
+using namespace std;
+
 #if !GME_DISABLE_STEREO_DEPTH
 #    include "Effects_Buffer.h"
 #endif
@@ -19,6 +22,15 @@ details. You should have received a copy of the GNU Lesser General Public
 License along with this module; if not, write to the Free Software Foundation,
 Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA */
 
+constexpr uint32_t operator"" _mc(const char* str, size_t) {
+    uint32_t res = 0, len = 4;
+    while (len-- > 0) {
+        res <<= 8;
+        res |= str[len];
+    }
+    return res;
+}
+
 gme_type_t const* gme_type_list() {
     static gme_type_t const gme_type_list_[] = {
         gme_nsf_type,
@@ -30,7 +42,7 @@ gme_type_t const* gme_type_list() {
 
 const char* gme_identify_header(void const* header) {
     switch (*(uint32_t*)header) {
-    case 'MSEN': // reverse of 'NESM'
+    case "NESM"_mc:
         return "NSF";
     }
     return "";

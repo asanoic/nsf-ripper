@@ -3,7 +3,7 @@ nsf-ripper
 
 NES game sound file (.nsf) music extractor to FLAC format
 
-demo NSF files from [Zophar's music] (https://www.zophar.net/music/nintendo-nes-nsf)
+demo NSF files from [Zophar's music](https://www.zophar.net/music/nintendo-nes-nsf)
 
 some files from [gme project](https://github.com/mcfiredrill/libgme)
 
