@@ -29,6 +29,5 @@ list(APPEND gme-src
 add_executable(${CMAKE_PROJECT_NAME} main.cpp ${gme-src})
 target_compile_features(${CMAKE_PROJECT_NAME} PUBLIC cxx_std_17)
 target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC "${pwd}/gme")
-target_link_options(${CMAKE_PROJECT_NAME} PUBLIC "$<$<NOT:$<CONFIG:Debug>>:-s>" "-Wl,--gc-sections")
 
 target_link_libraries(${CMAKE_PROJECT_NAME} FLAC)
